@@ -1,0 +1,46 @@
+services:
+  # 1. DATABASE (Named 'auction-db' so Java can find it)
+  auction-db: 
+    image: postgres:15
+    container_name: auction_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: auction_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  # 2. CACHE (Named 'auction-redis' so Go can find it)
+  auction-redis:
+    image: redis:7
+    container_name: auction_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+
+  # 3. JAVA IDENTITY SERVICE
+  identity-service:
+    build: ../services/identity-java
+    container_name: identity_java
+    ports:
+      - "9090:9090"
+    depends_on:
+      - auction-db # <--- Matches the name at line 3
+    environment:
+      # Use 'auction-db' as the hostname here
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auction-db:5432/auction_db
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+
+  # 4. GO BIDDING ENGINE
+  bidding-engine:
+    build: ../services/bidding-go
+    container_name: bidding_go
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auction-redis # <--- Matches the name at line 16
+      - identity-service
