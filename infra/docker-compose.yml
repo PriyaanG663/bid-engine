@@ -1,5 +1,5 @@
 services:
-  # 1. DATABASE (Named 'auction-db' so Java can find it)
+  # 1. DATABASE
   auction-db: 
     image: postgres:15
     container_name: auction_db
@@ -9,17 +9,23 @@ services:
       POSTGRES_DB: auction_db
     ports:
       - "5432:5432"
-    volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d auction_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-  # 2. CACHE (Named 'auction-redis' so Go can find it)
+  # 2. CACHE
   auction-redis:
     image: redis:7
     container_name: auction_redis
     ports:
       - "6379:6379"
-    volumes:
-      - ./data/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   # 3. JAVA IDENTITY SERVICE
   identity-service:
@@ -28,9 +34,9 @@ services:
     ports:
       - "9090:9090"
     depends_on:
-      - auction-db # <--- Matches the name at line 3
+      auction-db:
+        condition: service_healthy # Waits for DB to be fully ready
     environment:
-      # Use 'auction-db' as the hostname here
       SPRING_DATASOURCE_URL: jdbc:postgresql://auction-db:5432/auction_db
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
@@ -42,5 +48,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - auction-redis # <--- Matches the name at line 16
-      - identity-service
+      auction-redis:
+        condition: service_healthy # Fixes the "no healthcheck configured" error
+      identity-service:
+        condition: service_started
