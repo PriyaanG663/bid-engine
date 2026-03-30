@@ -173,5 +173,11 @@ func main() {
 			grpcConn.Close()
 		}
 	})
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// Replace the old http.ListenAndServe(":8080", nil) with this:
+	log.Println("Secure WSS Server starting on :8080...")
+
+	err := http.ListenAndServeTLS(":8080", "localhost+2.pem", "localhost+2-key.pem", nil)
+	if err != nil {
+    	log.Fatal("SSL Error: ", err)
+	}
 }

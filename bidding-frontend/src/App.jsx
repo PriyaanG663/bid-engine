@@ -21,7 +21,7 @@ export default function App() {
   const socket = useRef(null);
 
   const connect = useCallback(() => {
-    socket.current = new WebSocket('ws://localhost:8080/ws');
+    socket.current = new WebSocket('wss://localhost:8080/ws');
     socket.current.onmessage = (e) => {
       const data = JSON.parse(e.data);
       if (data.type === "AUTH_RES" && data.success) {
