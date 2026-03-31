@@ -1,8 +1,8 @@
-# 🛰️ RouteMaster
+# 🛰️ Bid-engine
 
 **High-Frequency Distributed Bidding Terminal**
 
-RouteMaster is a high-performance, polyglot microservices platform designed for real-time auctioning and bidding. It utilizes a distributed architecture to separate concerns between real-time state management (**Go**), persistent identity/wallet services (**Java**), and a low-latency reactive interface (**React**).
+Bid-engine is a high-performance, polyglot microservices platform designed for real-time auctioning and bidding. It utilizes a distributed architecture to separate concerns between real-time state management (**Go**), persistent identity/wallet services (**Java**), and a low-latency reactive interface (**React**).
 
 ---
 
