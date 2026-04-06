@@ -48,3 +48,7 @@ graph TD
     style Spring_Boot fill:#6db33f,stroke:#000,color:#fff
     style Redis fill:#dc382d,stroke:#000,color:#fff
     style Postgres fill:#336791,stroke:#000,color:#fff
+
+
+```
+Built by priyaan,rajath,sabique
